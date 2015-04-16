@@ -28,7 +28,7 @@ function init() {
 
 	var geometry = new THREE.SphereGeometry( 100, 48, 7 );
 
-	var material = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/Planck_8192px_30GHz.png' ) } );
+	var material = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/PlanckFig_map_columbi1_IDL_HighDR_12000px_30GHz_cart.png' ) } );
 
 	var sphere = new THREE.Mesh( geometry, material);
 
