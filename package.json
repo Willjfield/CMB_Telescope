@@ -1,7 +1,7 @@
 {  
 
-	"name": "CMB Telescope",
-	"version": "0.1",
+	"name": "CMB_Telescope",
+	"version": "0.12.2",
 	"main": "index.html",
 	"window":{
 		"fullscreen": true,

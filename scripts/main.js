@@ -120,8 +120,8 @@ function render() {
 	camera.position.y = 0;
 	camera.position.z = 0;
 
-	console.log(Gl);
-	console.log(Gb);
+	//console.log(Gl);
+	//console.log(Gb);
 
 	camera.rotation.x=Gl;
 	camera.rotation.y=Gb;
