@@ -15,6 +15,8 @@ var pointLight;
 var altitude;
 var azimuth;
 
+var material30;
+
 init();
 animate();
 
@@ -33,7 +35,7 @@ function init() {
             
             // log the message
             console.log(data);
-            altitude = (data/1023)*90;
+            //altitude = (data/1023)*90;
             
              // send message
             socket.emit('msg', 'hello server');
@@ -51,20 +53,40 @@ function init() {
 
 	var geometry = new THREE.SphereGeometry( 100, 48, 7 );
 
-	var material = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/PlanckFig_map_columbi1_IDL_HighDR_12000px_30GHz_cart.png' ) } );
+	material30 = new THREE.MeshBasicMaterial( { transparent: true, map: THREE.ImageUtils.loadTexture( 'textures/PlanckFig_map_columbi1_IDL_HighDR_12000px_30GHz_cart.png' ) } );
+	var material100 = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/PlanckFig_map_columbi1_IDL_HighDR_12000px_100GHz_cart.jpg' ) } );
+	var material353 = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/PlanckFig_map_columbi1_IDL_HighDR_12000px_353GHz_cart.jpg')});
+	var material545 = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/PlanckFig_map_columbi1_IDL_HighDR_12000px_545GHz_cart.jpg' ) } );
+	
+	var sphere30 = new THREE.Mesh( geometry, material30);
+	var sphere100 = new THREE.Mesh( geometry, material100);
+	var sphere353 = new THREE.Mesh( geometry, material353);
+	var sphere545 = new THREE.Mesh( geometry, material545);
 
-	var sphere = new THREE.Mesh( geometry, material);
+	//sphere30.position.x =  0;
+	//sphere30.position.z = 0;
+	//sphere30.rotation.z = 0;
+	//sphere30.rotation.x = 0;
+	
+	sphere30.rotation.y = 90 * (Math.PI/180);
+	sphere30.material.side = THREE.DoubleSide;
+	scene.add( sphere30 );
 
-	sphere.position.x =  0;
-	sphere.position.z = 0;
+	sphere100.rotation.y = 90 * (Math.PI/180);
+	sphere100.material.side = THREE.DoubleSide;
+	sphere100.scale.set(2,2,2);
+	scene.add( sphere100 );
 
-	sphere.rotation.x = 0;
-	sphere.rotation.y = 90 * (Math.PI/180);
-	sphere.rotation.z = 0;
+	sphere353.rotation.y = 90 * (Math.PI/180);
+	sphere353.material.side = THREE.DoubleSide;
+	sphere353.scale.set(3,3,3);
+	scene.add( sphere353 );
 
-	sphere.material.side = THREE.DoubleSide;
+	sphere545.rotation.y = 90 * (Math.PI/180);
+	sphere545.material.side = THREE.DoubleSide;
+	sphere545.scale.set(4,4,4);
+	scene.add( sphere545 );
 
-	scene.add( sphere );
 
 
 	// Lights
@@ -125,6 +147,8 @@ function loadImage( path ) {
 
 function animate() {
 
+	altitude = Math.sin(Date.now()*.001);
+	material30.opacity=(altitude+1)*.5;
 	galac = altaz2galac(latitude, longitude, altitude, 200);
 
 	Gl = parseFloat(galac[0])*(Math.PI/180);
