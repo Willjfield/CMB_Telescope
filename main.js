@@ -22,9 +22,22 @@ board.on('connection', function () {
     
     function updateLED () {
         board.analogRead(board.A0, function(val) {   
-        tmpVal=val;
-        console.log(val);
-        io.sockets.emit('msg',tmpVal);
+        tmpVal0=val;
+        console.log('A0 '+val);
+        io.sockets.emit('A0',tmpVal0);
+    });
+
+        board.analogRead(board.A1, function(val) {   
+        tmpVal1=val;
+        console.log('A1 '+val);
+        io.sockets.emit('A1',tmpVal1);
+    });
+
+        board.analogRead(board.A2, function(val) {   
+        tmpVal2=val;
+        console.log('A2 '+val);
+        io.sockets.emit('A2',tmpVal2);
+
     });
     
         /*// Set the pin to Pulse With Modulation

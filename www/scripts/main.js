@@ -14,77 +14,135 @@ var pointLight;
 
 var altitude;
 var azimuth;
+var focus;
 
-var material30;
+var sphere30,sphere100,sphere353,sphere545;
+
+var f30,
+	f100,
+	f353,
+	f545;
+
+var material30, material100, material353, material545;
 
 init();
 animate();
 
-function init() {
+var cursorX;
+var cursorY;
+document.onmousemove = function(e){
+    cursorX = e.pageX;
+    cursorY = e.pageY;
+}
+setInterval("checkCursor()", 1000);
+function checkCursor(){
+//alert("Cursor at: " + cursorX + ", " + cursorY);
+}
 
+function convertToRange(value, srcRange, dstRange){
+  // value is outside source range return
+  if (value < srcRange[0] || value > srcRange[1]){
+    return NaN; 
+  }
+
+  var srcMax = srcRange[1] - srcRange[0],
+      dstMax = dstRange[1] - dstRange[0],
+      adjValue = value - srcRange[0];
+
+  return (adjValue * dstMax / srcMax) + dstRange[0];
+
+}
+
+function init() {
+	altitude = 30;
+        azimuth = 30;
+        focus = 512;
+        /*
 	//do the socket stuff
 	var socket = io('http://localhost:8080');
-        
+
         // 
         socket.on('connect', function () {
                     console.log('The server is ready!');
         });
         
         // on msg
-        socket.on('msg', function (data) {
+        socket.on('A0', function (data) {
             
             // log the message
-            console.log(data);
-            //altitude = (data/1023)*90;
+            console.log('A0 '+data);
+            altitude = (data/1023)*90;
             
              // send message
-            socket.emit('msg', 'hello server');
+            socket.emit('A0', 'hello server');
         });
+
+         socket.on('A1', function (data) {
+            
+            // log the message
+            console.log('A1 '+data);
+            azimuth = (data/1023)*90;
+            
+             // send message
+            socket.emit('A1', 'hello server');
+        });
+
+         socket.on('A2', function (data) {
+            
+            // log the message
+            console.log('A2 '+data);
+            focus = data;
+            
+             // send message
+            socket.emit('A2', 'hello server');
+        });
+*/
     //do the threejs stuff
 	container = document.createElement('div');
 	document.body.appendChild(container);
 	//telescop fov: 4.68
-	camera = new THREE.PerspectiveCamera( 4.68, window.innerWidth / window.innerHeight, 1, 2000 );
+	camera = new THREE.PerspectiveCamera( 4.68, window.innerWidth / window.innerHeight, 1, 4000 );
 	camera.position.set( 0, 0, 0 );
 
 	scene = new THREE.Scene();
 
 	var size = 500, step = 100;
 
-	var geometry = new THREE.SphereGeometry( 100, 48, 7 );
+	var geometry30 = new THREE.SphereGeometry( 100, 48, 7 );
+	var geometry100 = new THREE.SphereGeometry( 110, 48, 7 );
+	var geometry353 = new THREE.SphereGeometry( 120, 48, 7 );
+	var geometry545 = new THREE.SphereGeometry( 130, 48, 7 );
 
-	material30 = new THREE.MeshBasicMaterial( { transparent: true, map: THREE.ImageUtils.loadTexture( 'textures/PlanckFig_map_columbi1_IDL_HighDR_12000px_30GHz_cart.png' ) } );
-	var material100 = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/PlanckFig_map_columbi1_IDL_HighDR_12000px_100GHz_cart.jpg' ) } );
-	var material353 = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/PlanckFig_map_columbi1_IDL_HighDR_12000px_353GHz_cart.jpg')});
-	var material545 = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/PlanckFig_map_columbi1_IDL_HighDR_12000px_545GHz_cart.jpg' ) } );
+	material30 = new THREE.MeshBasicMaterial( { transparent: true, map: THREE.ImageUtils.loadTexture( 'textures/CMB_30.png' )});
+	material100 = new THREE.MeshBasicMaterial( { transparent: true, map: THREE.ImageUtils.loadTexture( 'textures/CMB_100.png' )});
+	material353 = new THREE.MeshBasicMaterial( { transparent: true, map: THREE.ImageUtils.loadTexture( 'textures/CMB_353.png' )});
+	material545 = new THREE.MeshBasicMaterial( { transparent: true, map: THREE.ImageUtils.loadTexture( 'textures/CMB_857.png' )});
+
+	sphere30 = new THREE.Mesh( geometry30, material30);
+	sphere100 = new THREE.Mesh( geometry100, material100);
+	sphere353 = new THREE.Mesh( geometry353, material353);
+	sphere545 = new THREE.Mesh( geometry545, material545);
+
 	
-	var sphere30 = new THREE.Mesh( geometry, material30);
-	var sphere100 = new THREE.Mesh( geometry, material100);
-	var sphere353 = new THREE.Mesh( geometry, material353);
-	var sphere545 = new THREE.Mesh( geometry, material545);
-
-	//sphere30.position.x =  0;
-	//sphere30.position.z = 0;
-	//sphere30.rotation.z = 0;
-	//sphere30.rotation.x = 0;
 	
 	sphere30.rotation.y = 90 * (Math.PI/180);
 	sphere30.material.side = THREE.DoubleSide;
+	sphere30.material.depthWrite = false;
 	scene.add( sphere30 );
 
 	sphere100.rotation.y = 90 * (Math.PI/180);
 	sphere100.material.side = THREE.DoubleSide;
-	sphere100.scale.set(2,2,2);
+	sphere100.material.depthWrite = false;
 	scene.add( sphere100 );
 
 	sphere353.rotation.y = 90 * (Math.PI/180);
 	sphere353.material.side = THREE.DoubleSide;
-	sphere353.scale.set(3,3,3);
+	sphere353.material.depthWrite = false;
 	scene.add( sphere353 );
 
 	sphere545.rotation.y = 90 * (Math.PI/180);
 	sphere545.material.side = THREE.DoubleSide;
-	sphere545.scale.set(4,4,4);
+	sphere545.material.depthWrite = false;
 	scene.add( sphere545 );
 
 
@@ -147,9 +205,33 @@ function loadImage( path ) {
 
 function animate() {
 
-	altitude = Math.sin(Date.now()*.001);
-	material30.opacity=(altitude+1)*.5;
-	galac = altaz2galac(latitude, longitude, altitude, 200);
+	f30=0;
+	f100=0;
+	f353=0;
+	f545=0;
+
+	if(cursorY<200){
+		f30 = 1;
+		f100 = convertToRange(cursorY, [0,200], [0,1]);
+	}	else if (cursorY<400){
+		f100 = 1;
+		f353 = convertToRange(cursorY, [200,400], [0,1]);
+	}	else if (cursorY<600){
+		f353 = 1;
+		f545 = convertToRange(cursorY, [400,600], [0,1]);
+	}else{
+		f545=1;
+	}
+
+	material30.opacity = f30;
+	material100.opacity = f100;
+	material353.opacity = f353;
+	material545.opacity = f545;
+
+	altitude = Math.sin(Date.now()*.0001)*10;
+	azimuth = Math.cos(Date.now()*.0001)*10;
+
+	galac = altaz2galac(latitude, longitude, altitude, azimuth);
 
 	Gl = parseFloat(galac[0])*(Math.PI/180);
 	Gb = parseFloat(galac[1])*(Math.PI/180);
@@ -159,6 +241,7 @@ function animate() {
 
 function render() {
 
+	//console.log(material545.opacity);
 	requestAnimationFrame( animate );
 
 	var timer = Date.now() * 0.0001;
@@ -177,6 +260,7 @@ function render() {
 	pointLight.position.y = 0;
 	pointLight.position.z = 0;
 
+	sphere30.material.opacity = 1;
 	renderer.render( scene, camera );
 
 }
