@@ -13,7 +13,7 @@ var io = require('./socketServer').start(server);
 var serialPort = '/dev/tty.usbmodemfd121';
 var board = require('./firmataConnector').start(serialPort);
 
-var tmpVal;
+var tmpVal0, tmpVal1, tmpVal2;
 
 var userCounter = 0;
 
@@ -29,13 +29,13 @@ board.on('connection', function () {
 
         board.analogRead(board.A1, function(val) {   
         tmpVal1=val;
-        console.log('A1 '+val);
+        //console.log('A1 '+val);
         io.sockets.emit('A1',tmpVal1);
     });
 
         board.analogRead(board.A2, function(val) {   
         tmpVal2=val;
-        console.log('A2 '+val);
+        //console.log('A2 '+val);
         io.sockets.emit('A2',tmpVal2);
 
     });
@@ -54,7 +54,7 @@ board.on('connection', function () {
     // WebSocket connections
     io.sockets.on('connection', function (socket) {
 
-        socket.emit('msg',tmpVal);
+        socket.emit('msg',tmpVal0);
         
         console.log('client connected: '+ socket.id);
         userCounter++;

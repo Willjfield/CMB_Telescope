@@ -23,7 +23,12 @@ var f30,
 	f353,
 	f545;
 
+var sumPot0;
+
 var material30, material100, material353, material545;
+
+var oldAltitude;
+var oldAltitude2;
 
 init();
 animate();
@@ -55,33 +60,56 @@ function convertToRange(value, srcRange, dstRange){
 
 function init() {
 	altitude = 30;
-        azimuth = 30;
-        focus = 512;
-        /*
+    azimuth = 30;
+    focus = 512;
+    oldAltitude=0;
+
 	//do the socket stuff
 	var socket = io('http://localhost:8080');
-
-        // 
+ 
         socket.on('connect', function () {
                     console.log('The server is ready!');
         });
         
         // on msg
         socket.on('A0', function (data) {
-            
+            sumPot0=0;
             // log the message
             console.log('A0 '+data);
-            altitude = (data/1023)*90;
-            
+            /*if(data>470 && data < 650){
+            tempAlt = convertToRange(data, [470,650], [0,90]);
+            	if(pot0data.length<10){
+            		pot0data.push(tempAlt);
+        		}
+        		if(pot0data.length==10){
+        			pot0data.splice(-1,9);
+        		}
+        	}
+        	for(var i =0;i<pot0data.length;i++){
+            sumPot0+=pot0data[i];
+        	}
+            //altitude = sumPot0/pot0data.length;
              // send message
+             */
+             
+             if(data>470 && data < 650){
+             	//if(Math.abs(oldAltitude-altitude)>2){
+             	altitude = convertToRange(data, [470,650], [0,90]);
+             	if(Math.abs(oldAltitude-altitude)>2){
+             	altitude = (altitude+oldAltitude)/2;
+             	oldAltitude = altitude;
+         }
+         }
             socket.emit('A0', 'hello server');
         });
 
          socket.on('A1', function (data) {
             
             // log the message
-            console.log('A1 '+data);
-            azimuth = (data/1023)*90;
+            //console.log('A1 '+data);
+            //if(data>400 && data < 600){
+            //altitude = convertToRange(data, [400,600], [0,90]);
+        	//}
             
              // send message
             socket.emit('A1', 'hello server');
@@ -90,13 +118,13 @@ function init() {
          socket.on('A2', function (data) {
             
             // log the message
-            console.log('A2 '+data);
+            //console.log('A2 '+data);
             focus = data;
             
              // send message
             socket.emit('A2', 'hello server');
         });
-*/
+
     //do the threejs stuff
 	container = document.createElement('div');
 	document.body.appendChild(container);
@@ -144,8 +172,6 @@ function init() {
 	sphere545.material.side = THREE.DoubleSide;
 	sphere545.material.depthWrite = false;
 	scene.add( sphere545 );
-
-
 
 	// Lights
 
@@ -209,16 +235,29 @@ function animate() {
 	f100=0;
 	f353=0;
 	f545=0;
-
-	if(cursorY<200){
+	/*
+	if(cursorY<256){
 		f30 = 1;
 		f100 = convertToRange(cursorY, [0,200], [0,1]);
-	}	else if (cursorY<400){
+	}	else if (cursorY<512){
 		f100 = 1;
 		f353 = convertToRange(cursorY, [200,400], [0,1]);
-	}	else if (cursorY<600){
+	}	else if (cursorY<768){
 		f353 = 1;
 		f545 = convertToRange(cursorY, [400,600], [0,1]);
+	}else{
+		f545=1;
+	}
+	*/
+	if(focus<256){
+		f30 = 1;
+		f100 = convertToRange(focus, [0,256], [0,1]);
+	}	else if (focus<512){
+		f100 = 1;
+		f353 = convertToRange(focus, [256,512], [0,1]);
+	}	else if (focus<768){
+		f353 = 1;
+		f545 = convertToRange(focus, [512,768], [0,1]);
 	}else{
 		f545=1;
 	}
@@ -228,8 +267,8 @@ function animate() {
 	material353.opacity = f353;
 	material545.opacity = f545;
 
-	altitude = Math.sin(Date.now()*.0001)*10;
-	azimuth = Math.cos(Date.now()*.0001)*10;
+	//altitude = A0;//Math.sin(Date.now()*.0001)*10;
+	azimuth = 0;//Math.cos(Date.now()*.0001)*10;
 
 	galac = altaz2galac(latitude, longitude, altitude, azimuth);
 
